@@ -5,29 +5,71 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>WX (Weather Alerts) — MeshMonitor Script</title>
     <style>
-      body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-      header { padding: 18px 20px; border-bottom: 1px solid #e5e5e5; }
-      h1 { margin: 0 0 6px 0; font-size: 20px; }
-      .sub { color: #666; font-size: 13px; }
-      main { padding: 14px 20px; }
-      pre { white-space: pre; overflow: auto; padding: 14px; border: 1px solid #e5e5e5; border-radius: 8px; }
-      .hint { margin-top: 10px; color: #666; font-size: 12px; }
-      code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        background: #ffffff;
+        color: #111;
+      }
+      header {
+        padding: 18px 20px;
+        border-bottom: 1px solid #e5e5e5;
+      }
+      h1 {
+        margin: 0 0 6px 0;
+        font-size: 20px;
+      }
+      .sub {
+        color: #666;
+        font-size: 13px;
+        max-width: 900px;
+      }
+      main {
+        padding: 16px 20px;
+        max-width: 1100px;
+      }
+      section {
+        margin-bottom: 22px;
+      }
+      h2 {
+        font-size: 16px;
+        margin: 0 0 8px 0;
+      }
+      p, li {
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      pre {
+        white-space: pre;
+        overflow: auto;
+        padding: 14px;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        background: #fafafa;
+        font-size: 12.5px;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+        font-size: 12.5px;
+      }
+      .note {
+        font-size: 12px;
+        color: #555;
+        margin-top: 8px;
+      }
+      .warn {
+        background: #fff7e6;
+        border: 1px solid #f1d48a;
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+      }
     </style>
   </head>
   <body>
     <header>
       <h1>WX (Weather Alerts)</h1>
-      <div class="sub">MeshMonitor Auto Responder script (display-only). Use <code>mm_wx.py</code> in MeshMonitor.</div>
-    </header>
-
-    <main>
-      <pre id="code">Loading…</pre>
-      <div class="hint">
-        Note: This page is for viewing only. Do not run <code>docs/index.js</code>.
-      </div>
-    </main>
-
-    <script src="index.js"></script>
-  </body>
-</html>
