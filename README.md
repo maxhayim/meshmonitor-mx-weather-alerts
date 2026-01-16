@@ -13,24 +13,29 @@ WX (Weather Alerts) is a MeshMonitor Script Auto Responder that provides NOAA/NW
 
 This repository contains:
 
-- `mm_wx.py` — the actual MeshMonitor Auto Responder script (runtime)
+- `mm_wx.py` — the MeshMonitor script (runtime)
 - `docs/` — GitHub Pages documentation (display only)
 
 ---
 
 ## What this does
 
-This MeshMonitor Auto Responder script allows users to:
+WX supports TWO modes:
 
-- Request a summary of active NWS alerts for a configured latitude/longitude
-- Request details for a specific alert item
-- Receive “NOAA-inspired” bulletins that include SAME-style targeting identifiers when available (UGC, SAME)
+1) **Automatic alerts (recommended)**
+   - Uses MeshMonitor **Timer Triggers (Timed Events)** to run the script on a schedule
+   - Script dedupes alerts and only posts when something is NEW/UPDATED/CLEARED
+
+2) **On-demand commands**
+   - `!wx` summary
+   - `!wx detail N`
+   - `!wx help`
 
 Design goals:
 
 - KISS: location is configured as latitude/longitude
-- On-demand only (no beaconing / no background polling)
-- Short messages that work well over LoRa
+- Lightweight messages that work well over LoRa
+- No “NOAA audio rebroadcast” — this is text-based alerting using official NWS data
 
 ---
 
@@ -63,19 +68,82 @@ This is the only file MeshMonitor should execute.
 
 ## Installing mm_wx.py
 
-The script must exist inside the MeshMonitor environment at:
+MeshMonitor script requirements (high level):
+- Script must be in `/data/scripts/`
+- Script must output valid JSON to stdout with `response` or `responses`
+- Must complete within the timeout window
+- Must be executable :contentReference[oaicite:1]{index=1}
+
+Copy the script into the MeshMonitor container:
 
     /data/scripts/mm_wx.py
 
 Make it executable:
 
-    chmod +x mm_wx.py
+    chmod +x /data/scripts/mm_wx.py
 
 ---
 
-## MeshMonitor Auto Responder configuration
+## Configuration (inside mm_wx.py)
 
-Create three Auto Responder rules.
+Edit these constants near the top of `mm_wx.py`:
+
+- `WX_LAT`
+- `WX_LON`
+
+Optional:
+- `WX_SEVERITIES_ALLOW`
+- `WX_EVENTS_BLOCK`
+- `WX_TIMER_SCHEDULE_NOTE` (documentation only)
+- `WX_STATE_PATH` (where the dedupe file is stored)
+- `WX_TIMER_SILENT_NOCHANGE` (recommended ON)
+
+---
+
+## Automatic Alerts (Timer Triggers / Timed Events) — RECOMMENDED
+
+MeshMonitor can run scripts automatically using **Timer Triggers (Timed Events)**. When the timer fires, MeshMonitor executes the script and sends the script output to the configured channel. :contentReference[oaicite:2]{index=2}
+
+### Step-by-step setup
+
+1. Open MeshMonitor
+2. Go to **Info → Automation**
+3. Scroll to **Timer Triggers (Timed Events)**
+4. Add a timer:
+   - **Name:** `WX Alerts`
+   - **Schedule:** `*/5 * * * *` (every 5 minutes)
+   - **Script:** `mm_wx.py`
+   - **Channel:** `0` (Primary) or whatever channel you want
+   - **Enabled:** On
+5. Click **Add Timer**
+6. Click **Save**
+
+MeshMonitor’s Timer Triggers execute scripts from `/data/scripts/` and send the output to the selected channel. :contentReference[oaicite:3]{index=3}
+
+### How dedupe works (so you don’t spam the mesh)
+
+- On each timer run, `mm_wx.py` fetches active alerts for your point (LAT/LON)
+- It builds a “fingerprint set” of alerts (id + sent/effective/ends/expires)
+- It compares to the last run, stored in:
+
+    /data/wx_state.json
+
+- It only posts messages if something changed:
+  - NEW alerts
+  - UPDATED alerts
+  - CLEARED alerts (previously active but now gone)
+
+If you want a “heartbeat” even when nothing changes, set:
+
+- `WX_TIMER_SILENT_NOCHANGE = False`
+
+(Otherwise it outputs an empty response and MeshMonitor should effectively send nothing.)
+
+---
+
+## MeshMonitor Auto Responder configuration (optional)
+
+Create three Auto Responder rules if you want on-demand commands too.
 
 ### Rule 1 — WX summary
 
@@ -83,7 +151,7 @@ Trigger regex:
 
     ^!wx$
 
-Action: Script  
+Response Type: Script  
 Script path:
 
     /data/scripts/mm_wx.py
@@ -94,7 +162,7 @@ Trigger regex:
 
     ^!wx\s+detail\s+([0-9]+)$
 
-Action: Script  
+Response Type: Script  
 Script path:
 
     /data/scripts/mm_wx.py
@@ -105,7 +173,7 @@ Trigger regex:
 
     ^!wx\s+help$
 
-Action: Script  
+Response Type: Script  
 Script path:
 
     /data/scripts/mm_wx.py
@@ -117,17 +185,6 @@ Script path:
     !wx
     !wx detail 1
     !wx help
-
----
-
-## Configuration (inside mm_wx.py)
-
-Edit these constants near the top of `mm_wx.py`:
-
-- `WX_LAT`
-- `WX_LON`
-- `WX_SEVERITIES_ALLOW` (optional)
-- `WX_EVENTS_BLOCK` (optional)
 
 ---
 
