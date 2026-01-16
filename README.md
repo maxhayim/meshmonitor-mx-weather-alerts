@@ -9,7 +9,7 @@
 
 # ⛈️ WX (Weather Alerts)
 
-WX (Weather Alerts) is a MeshMonitor Script Auto Responder that provides NOAA/NWS weather alert bulletins for a configured latitude/longitude.
+WX (Weather Alerts) is a [**MeshMonitor**](https://github.com/Yeraze/MeshMonitor) Script Auto Responder that provides NOAA/NWS weather alert bulletins for a configured latitude/longitude.
 
 This repository contains:
 
