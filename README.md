@@ -24,7 +24,7 @@ WX supports TWO modes:
 
 1) **Automatic alerts (recommended)**
    - Uses MeshMonitor **Timer Triggers (Timed Events)** to run the script on a schedule
-   - Script dedupes alerts and only posts when something is NEW/UPDATED/CLEARED
+   - Script dedupes alerts and only posts when something is NEW, UPDATED, or CLEARED
 
 2) **On-demand commands**
    - `!wx` summary
@@ -35,7 +35,7 @@ Design goals:
 
 - KISS: location is configured as latitude/longitude
 - Lightweight messages that work well over LoRa
-- No “NOAA audio rebroadcast” — this is text-based alerting using official NWS data
+- No NOAA audio rebroadcast — this is text-based alerting using official NWS data
 
 ---
 
@@ -69,10 +69,11 @@ This is the only file MeshMonitor should execute.
 ## Installing mm_wx.py
 
 MeshMonitor script requirements (high level):
+
 - Script must be in `/data/scripts/`
 - Script must output valid JSON to stdout with `response` or `responses`
-- Must complete within the timeout window
-- Must be executable :contentReference[oaicite:1]{index=1}
+- Must complete within the MeshMonitor timeout window
+- Must be executable
 
 Copy the script into the MeshMonitor container:
 
@@ -88,21 +89,23 @@ Make it executable:
 
 Edit these constants near the top of `mm_wx.py`:
 
+Required:
 - `WX_LAT`
 - `WX_LON`
 
 Optional:
 - `WX_SEVERITIES_ALLOW`
 - `WX_EVENTS_BLOCK`
+- `WX_TIMER_SILENT_NOCHANGE`
+- `WX_STATE_PATH`
 - `WX_TIMER_SCHEDULE_NOTE` (documentation only)
-- `WX_STATE_PATH` (where the dedupe file is stored)
-- `WX_TIMER_SILENT_NOCHANGE` (recommended ON)
+- `WX_USER_AGENT` (recommended to include contact info)
 
 ---
 
 ## Automatic Alerts (Timer Triggers / Timed Events) — RECOMMENDED
 
-MeshMonitor can run scripts automatically using **Timer Triggers (Timed Events)**. When the timer fires, MeshMonitor executes the script and sends the script output to the configured channel. :contentReference[oaicite:2]{index=2}
+MeshMonitor can run scripts automatically using **Timer Triggers (Timed Events)**. When the timer fires, MeshMonitor executes the script and sends the script output to the configured channel.
 
 ### Step-by-step setup
 
@@ -113,37 +116,37 @@ MeshMonitor can run scripts automatically using **Timer Triggers (Timed Events)*
    - **Name:** `WX Alerts`
    - **Schedule:** `*/5 * * * *` (every 5 minutes)
    - **Script:** `mm_wx.py`
-   - **Channel:** `0` (Primary) or whatever channel you want
+   - **Channel:** `0` (Primary) or any desired channel
    - **Enabled:** On
 5. Click **Add Timer**
 6. Click **Save**
 
-MeshMonitor’s Timer Triggers execute scripts from `/data/scripts/` and send the output to the selected channel. :contentReference[oaicite:3]{index=3}
+---
 
-### How dedupe works (so you don’t spam the mesh)
+## How deduplication works (no mesh spam)
 
-- On each timer run, `mm_wx.py` fetches active alerts for your point (LAT/LON)
-- It builds a “fingerprint set” of alerts (id + sent/effective/ends/expires)
-- It compares to the last run, stored in:
+- On each timer run, WX fetches active alerts for the configured latitude/longitude
+- Each alert is fingerprinted (ID + timestamps)
+- State is stored persistently in:
 
     /data/wx_state.json
 
-- It only posts messages if something changed:
-  - NEW alerts
-  - UPDATED alerts
-  - CLEARED alerts (previously active but now gone)
+- Messages are only sent when alerts are:
+  - **NEW** (not previously active)
+  - **UPDATED** (timing or content changed)
+  - **CLEARED** (previously active but no longer present)
 
-If you want a “heartbeat” even when nothing changes, set:
+If you want a heartbeat message even when nothing changes, set:
 
-- `WX_TIMER_SILENT_NOCHANGE = False`
+    WX_TIMER_SILENT_NOCHANGE = False
 
-(Otherwise it outputs an empty response and MeshMonitor should effectively send nothing.)
+(Default behavior is silent when there are no changes.)
 
 ---
 
 ## MeshMonitor Auto Responder configuration (optional)
 
-Create three Auto Responder rules if you want on-demand commands too.
+If you want on-demand commands in addition to automatic alerts, create Auto Responder rules.
 
 ### Rule 1 — WX summary
 
@@ -167,7 +170,7 @@ Script path:
 
     /data/scripts/mm_wx.py
 
-### Rule 3 — WX help (optional)
+### Rule 3 — WX help
 
 Trigger regex:
 
@@ -188,18 +191,78 @@ Script path:
 
 ---
 
+## Packaging / Dependencies (PEP 668 safe)
+
+WX uses **Python standard library only**.
+
+There are **no pip or third-party dependencies**, which avoids issues with PEP 668 / externally-managed Python environments inside containers.
+
+If your MeshMonitor container has Python 3, the script will run without installing anything.
+
+---
+
+## DNS / Connectivity Troubleshooting (Docker)
+
+If WX reports DNS failures, connection errors, or cannot reach `api.weather.gov`, the issue is almost always Docker or host DNS configuration.
+
+### Verify DNS inside the container
+
+    docker exec -it meshmonitor sh -lc "getent hosts api.weather.gov; echo '---'; cat /etc/resolv.conf"
+
+If this fails, DNS is broken inside the container.
+
+### Recommended docker-compose DNS override
+
+Add the following to your MeshMonitor service in `docker-compose.yml`:
+
+    services:
+      meshmonitor:
+        dns:
+          - 1.1.1.1
+          - 8.8.8.8
+
+Redeploy:
+
+    docker compose up -d
+
+### Host-level Docker daemon DNS (if needed)
+
+Create or edit `/etc/docker/daemon.json`:
+
+    {
+      "dns": ["1.1.1.1", "8.8.8.8"]
+    }
+
+Restart Docker:
+
+    sudo systemctl restart docker
+
+---
+
+## NWS API notes
+
+- WX queries active alerts by point:
+  - `https://api.weather.gov/alerts/active?point=LAT,LON`
+- The National Weather Service may rate-limit or block generic clients.
+- Keep `WX_USER_AGENT` set to a real identifier with contact information.
+
+---
+
 ## Inspiration & references
 
-- NOAA/NWS alerting concepts (SAME/UGC-style targeting)
-- Inspired by [SkywarnPlus](https://github.com/Yeraze)  (CAP alert redistribution patterns)
+- NOAA / NWS Weather Radio alerting concepts (SAME / UGC-style targeting)
+- Inspired by SkywarnPlus (CAP alert redistribution patterns)
 
-WX (Weather Alerts) is not affiliated with NOAA and does not rebroadcast NOAA audio. It provides text-based alerting for Meshtastic meshes using official NWS alert data.
+WX (Weather Alerts) is **not affiliated with NOAA** and does **not** rebroadcast NOAA audio.  
+It provides text-based alerting for Meshtastic meshes using official NWS alert data.
 
 ---
 
 ## License
 
 MIT License
+
+---
 
 ## Acknowledgments
 
