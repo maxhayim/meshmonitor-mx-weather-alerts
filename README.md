@@ -262,7 +262,7 @@ This is **not required** for normal operation.
 1. Open **MeshMonitor**
 2. Go to **Info → Automation**
 3. Under **Timer Triggers (Timed Events)**:
-   - Disable the `WX Alerts` timer
+   - Disable the `WX (Weather Alerts)` timer
 4. (Optional) Remove Auto Responder rules for:
    - `^!wx$`
    - `^!wx\s+detail\s+([0-9]+)$`
