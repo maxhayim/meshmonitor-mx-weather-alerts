@@ -113,7 +113,7 @@ MeshMonitor can run scripts automatically using **Timer Triggers (Timed Events)*
 2. Go to **Info → Automation**
 3. Scroll to **Timer Triggers (Timed Events)**
 4. Add a timer:
-   - **Name:** `WX Alerts`
+   - **Name:** `WX (Weather Alerts)`
    - **Schedule:** `*/5 * * * *` (every 5 minutes)
    - **Script:** `mm_wx.py`
    - **Channel:** `0` (Primary) or any desired channel
