@@ -239,6 +239,15 @@ Restart Docker:
 
 ---
 
+## NWS API notes
+
+- WX queries active alerts by point:
+  - `https://api.weather.gov/alerts/active?point=LAT,LON`
+- The National Weather Service may rate-limit or block generic clients.
+- Keep `WX_USER_AGENT` set to a real identifier with contact information.
+
+---
+
 ## Maintenance / Reinstall (Advanced)
 
 These steps are only needed if you are upgrading versions, changing core configuration
@@ -296,15 +305,6 @@ Exit the container:
 4. Click **Save**
 
 On the next timer run, WX will rebuild its state and resume normal operation.
-
----
-
-## NWS API notes
-
-- WX queries active alerts by point:
-  - `https://api.weather.gov/alerts/active?point=LAT,LON`
-- The National Weather Service may rate-limit or block generic clients.
-- Keep `WX_USER_AGENT` set to a real identifier with contact information.
 
 ---
 
