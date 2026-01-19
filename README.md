@@ -239,6 +239,66 @@ Restart Docker:
 
 ---
 
+## Maintenance / Reinstall (Advanced)
+
+These steps are only needed if you are upgrading versions, changing core configuration
+(e.g. latitude/longitude), or troubleshooting unexpected behavior.
+
+This is **not required** for normal operation.
+
+---
+
+### Disable WX in MeshMonitor
+
+1. Open **MeshMonitor**
+2. Go to **Info → Automation**
+3. Under **Timer Triggers (Timed Events)**:
+   - Disable the `WX Alerts` timer
+4. (Optional) Remove Auto Responder rules for:
+   - `^!wx$`
+   - `^!wx\s+detail\s+([0-9]+)$`
+   - `^!wx\s+help$`
+5. Click **Save**
+
+---
+
+### Remove script and state (inside container)
+
+Enter the MeshMonitor container:
+
+    docker exec -it meshmonitor sh
+
+Remove the WX runtime script:
+
+    rm -f /data/scripts/mm_wx.py
+
+Remove the persistent deduplication state:
+
+    rm -f /data/wx_state.json
+
+Exit the container:
+
+    exit
+
+---
+
+### Reinstall WX
+
+1. Copy the updated `mm_wx.py` back into:
+
+       /data/scripts/mm_wx.py
+
+2. Make the script executable:
+
+       chmod +x /data/scripts/mm_wx.py
+
+3. Re-enable the **WX Alerts** Timer Trigger in MeshMonitor
+4. Click **Save**
+
+On the next timer run, WX will rebuild its state and resume normal operation.
+
+---
+
 ## NWS API notes
 
 - WX queries active alerts by point:
