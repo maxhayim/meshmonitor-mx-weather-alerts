@@ -45,7 +45,8 @@ Design goals:
     ├── mm_wx.py              # Runtime script used by MeshMonitor
     ├── docs/                 # GitHub Pages documentation
     │   ├── index.html
-    │   └── index.js
+    │   ├── index.js
+    │   └── assets/           # Screenshots/images for docs + README
     └── README.md
 
 ---
@@ -85,6 +86,21 @@ Make it executable:
 
 ---
 
+## Recommended install (pin to a release tag)
+
+For stable deployments, install from a release tag (replace `vX.Y.Z` with the latest release tag):
+
+    docker exec -it meshmonitor sh -lc "
+    wget -O /data/scripts/mm_wx.py https://raw.githubusercontent.com/maxhayim/meshmonitor-mx-weather-alerts/vX.Y.Z/mm_wx.py &&
+    chmod +x /data/scripts/mm_wx.py &&
+    python3 -m py_compile /data/scripts/mm_wx.py &&
+    echo OK
+    "
+
+Using a pinned tag (instead of `main`) ensures your container always runs the exact released version.
+
+---
+
 ## Configuration (inside mm_wx.py)
 
 Edit these constants near the top of `mm_wx.py`:
@@ -100,6 +116,11 @@ Optional:
 - `WX_STATE_PATH`
 - `WX_TIMER_SCHEDULE_NOTE` (documentation only)
 - `WX_USER_AGENT` (recommended to include contact info)
+
+Recommended (network resilience / mesh noise control):
+- `HTTP_RETRIES` (default: 3)
+- `HTTP_RETRY_SLEEP_SECONDS` (default: 2)
+- `TIMER_SILENT_ON_FETCH_ERROR` (recommended ON to avoid mesh spam during transient DNS/network issues)
 
 ---
 
@@ -125,7 +146,7 @@ MeshMonitor can run scripts automatically using **Timer Triggers (Timed Events)*
 
 ## How deduplication works (no mesh spam)
 
-- On each timer run, WX fetches active alerts for the configured latitude/longitude
+- On each timer run, WX (Weather Alerts) fetches active alerts for the configured latitude/longitude
 - Each alert is fingerprinted (ID + timestamps)
 - State is stored persistently in:
 
@@ -147,6 +168,13 @@ If you want a heartbeat message even when nothing changes, set:
 ## MeshMonitor Auto Responder configuration (optional)
 
 If you want on-demand commands in addition to automatic alerts, create Auto Responder rules.
+
+Recommended settings for all triggers:
+- Response Type: `Script`
+- Script Path: `/data/scripts/mm_wx.py`
+- Channel: `Direct Messages` (recommended to start)
+- Enable Multiline: ON
+- Verify Response: OFF
 
 ### Rule 1 — WX summary
 
@@ -199,7 +227,7 @@ Script path:
 
 ## Packaging / Dependencies (PEP 668 safe)
 
-WX uses **Python standard library only**.
+WX (Weather Alerts) uses **Python standard library only**.
 
 There are **no pip or third-party dependencies**, which avoids issues with PEP 668 / externally-managed Python environments inside containers.
 
@@ -209,13 +237,17 @@ If your MeshMonitor container has Python 3, the script will run without installi
 
 ## DNS / Connectivity Troubleshooting (Docker)
 
-If WX reports DNS failures, connection errors, or cannot reach `api.weather.gov`, the issue is almost always Docker or host DNS configuration.
+If WX (Weather Alerts) reports DNS failures, connection errors, or cannot reach `api.weather.gov`, the issue is almost always Docker or host DNS configuration (or transient resolver/network events).
 
 ### Verify DNS inside the container
 
-    docker exec -it meshmonitor sh -lc "getent hosts api.weather.gov; echo '---'; cat /etc/resolv.conf"
+    docker exec -it meshmonitor sh -lc "getent hosts api.weather.gov || true; echo '---'; cat /etc/resolv.conf"
 
-If this fails, DNS is broken inside the container.
+### Verify outbound HTTPS from the container
+
+    docker exec -it meshmonitor sh -lc "wget -S -O- --timeout=10 https://api.weather.gov/alerts/active?point=25.7617,-80.1918 2>&1 | head -n 20"
+
+If DNS resolves and HTTPS works, but you still see occasional `URL error: [Errno -3] Try again`, this is typically a transient DNS condition. The script includes retry/backoff, and you can keep timer runs quiet via `TIMER_SILENT_ON_FETCH_ERROR`.
 
 ### Recommended docker-compose DNS override
 
@@ -247,7 +279,7 @@ Restart Docker:
 
 ## NWS API notes
 
-- WX queries active alerts by point:
+- WX (Weather Alerts) queries active alerts by point:
   - `https://api.weather.gov/alerts/active?point=LAT,LON`
 - The National Weather Service may rate-limit or block generic clients.
 - Keep `WX_USER_AGENT` set to a real identifier with contact information.
@@ -263,7 +295,7 @@ This is **not required** for normal operation.
 
 ---
 
-### Disable WX in MeshMonitor
+### Disable WX (Weather Alerts) in MeshMonitor
 
 1. Open **MeshMonitor**
 2. Go to **Info → Automation**
@@ -297,18 +329,18 @@ Exit the container:
 
 ---
 
-### Reinstall WX
+### Reinstall WX (Weather Alerts)
 
-1. Copy the updated `mm_wx.py` back into:
+Recommended: reinstall from a release tag (replace `vX.Y.Z` with the latest release tag):
 
-       /data/scripts/mm_wx.py
+    docker exec -it meshmonitor sh -lc "
+    wget -O /data/scripts/mm_wx.py https://raw.githubusercontent.com/maxhayim/meshmonitor-mx-weather-alerts/vX.Y.Z/mm_wx.py &&
+    chmod +x /data/scripts/mm_wx.py &&
+    python3 -m py_compile /data/scripts/mm_wx.py &&
+    echo OK
+    "
 
-2. Make the script executable:
-
-       chmod +x /data/scripts/mm_wx.py
-
-3. Re-enable the **WX Alerts** Timer Trigger in MeshMonitor
-4. Click **Save**
+Then re-enable the **WX (Weather Alerts)** Timer Trigger in MeshMonitor and click **Save**.
 
 On the next timer run, WX will rebuild its state and resume normal operation.
 
@@ -317,7 +349,7 @@ On the next timer run, WX will rebuild its state and resume normal operation.
 ## Inspiration & references
 
 - NOAA / NWS Weather Radio alerting concepts (SAME / UGC-style targeting)
-- Inspired by SkywarnPlus (CAP alert redistribution patterns)
+- Inspired by [SkywarnPlus](https://github.com/Mason10198/SkywarnPlus)
 
 WX (Weather Alerts) is **not affiliated with NOAA** and does **not** rebroadcast NOAA audio.  
 It provides text-based alerting for Meshtastic meshes using official NWS alert data.
@@ -330,9 +362,11 @@ MIT License
 
 ---
 
+
 ## Acknowledgments
 
 * MeshMonitor built by [Yeraze](https://github.com/Yeraze) 
 * Shout out to [SkywarnPlus](https://github.com/Mason10198/SkywarnPlus)
 
 Discover other community-contributed Auto Responder scripts for MeshMonitor [here](https://meshmonitor.org/user-scripts.html).
+
