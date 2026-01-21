@@ -1,19 +1,32 @@
-// Display-only script loader for GitHub Pages
-// It fetches the runtime file from the repo root and prints it into <pre>.
+(() => {
+  const CODE_EL = document.getElementById("code");
+  const COPY_BTN = document.getElementById("copyBtn");
 
-(async () => {
-  const pre = document.getElementById("code");
-  const url = "../mm_wx.py";
+  // Fetch raw mm_wx.py from main for display purposes.
+  // (For pinned releases, change /main/ to /vX.Y.Z/.)
+  const RAW_URL = "https://raw.githubusercontent.com/maxhayim/meshmonitor-mx-weather-alerts/main/mm_wx.py";
 
-  try {
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const txt = await res.text();
-    pre.textContent = txt;
-  } catch (err) {
-    pre.textContent =
-      "Failed to load mm_wx.py\n\n" +
-      String(err) +
-      "\n\nIf you are viewing this locally, serve the docs folder with a simple web server.";
+  async function load() {
+    try {
+      const resp = await fetch(RAW_URL, { cache: "no-store" });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const text = await resp.text();
+      CODE_EL.textContent = text;
+
+      COPY_BTN.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(text);
+          COPY_BTN.textContent = "Copied";
+          setTimeout(() => (COPY_BTN.textContent = "Copy"), 1200);
+        } catch {
+          COPY_BTN.textContent = "Copy failed";
+          setTimeout(() => (COPY_BTN.textContent = "Copy"), 1200);
+        }
+      });
+    } catch (e) {
+      CODE_EL.textContent = `Failed to load script from:\n${RAW_URL}\n\nError: ${String(e)}`;
+    }
   }
+
+  load();
 })();
