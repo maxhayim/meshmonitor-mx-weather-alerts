@@ -191,6 +191,12 @@ Script path:
 
 ---
 
+### Screenshots
+
+![Auto Responder Scripts](docs/assets/MeshMonitor-Auto-Responder-Scripts.png)
+
+---
+
 ## Packaging / Dependencies (PEP 668 safe)
 
 WX uses **Python standard library only**.
