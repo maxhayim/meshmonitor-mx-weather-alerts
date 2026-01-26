@@ -222,6 +222,7 @@ Script path:
 ### Screenshots
 
 ![Auto Responder Scripts](docs/assets/MeshMonitor-Auto-Responder-Scripts.png)
+![Timed Events Scripts](docs/assets/MeshMonitor-Timer-Scripts.png)
 
 ---
 
