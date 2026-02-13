@@ -1,0 +1,61 @@
+# =========================
+# Python
+# =========================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# =========================
+# OS / Editor junk
+# =========================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# VSCode
+.vscode/
+
+# JetBrains
+.idea/
+*.iml
+
+# Vim
+*.swp
+*.swo
+*~
+
+# =========================
+# Logs
+# =========================
+
+*.log
+
+# =========================
+# Build / temp files
+# =========================
+
+dist/
+build/
+*.egg-info/
+*.egg
+
+# =========================
+# Local testing / runtime state (DO NOT COMMIT)
+# =========================
+
+wx_state.json
+/data/
