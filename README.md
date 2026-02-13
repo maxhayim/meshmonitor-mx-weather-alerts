@@ -359,7 +359,10 @@ It provides text-based alerting for Meshtastic meshes using official NWS alert d
 
 ## License
 
-MIT License
+This project is licensed under the MIT License.
+
+See the [LICENSE](LICENSE) file for details.  
+Full license text: https://opensource.org/licenses/MIT
 
 ---
 
