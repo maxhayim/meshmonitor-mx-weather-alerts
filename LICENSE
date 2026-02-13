@@ -1,0 +1,36 @@
+MIT License
+
+Copyright (c) 2026 Max Hayim
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+
+---
+
+## Third-Party Acknowledgments
+
+WX (Weather Alerts) is an independent, open-source MeshMonitor Auto Responder script designed to integrate with:
+
+- MeshMonitor (by Yeraze)
+- Meshtastic (open-source LoRa mesh networking platform)
+- The National Weather Service (NWS) public API at https://api.weather.gov/
+
+This project uses publicly available NWS alert data but does not rebroadcast NOAA Weather Radio audio and is not affiliated with NOAA or the National Weather Service.
+
+All trademarks, logos, and brand names are the property of their respective owners.  
+WX (Weather Alerts) is not affiliated with, endorsed by, or officially connected to MeshMonitor, Meshtastic, NOAA, the National Weather Service, or any other referenced platform or provider.
