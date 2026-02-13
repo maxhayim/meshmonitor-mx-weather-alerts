@@ -377,5 +377,5 @@ Pull requests are welcome. Open an issue first to discuss ideas or report bugs.<
 * MeshMonitor built by [Yeraze](https://github.com/Yeraze) 
 * Shout out to [SkywarnPlus](https://github.com/Mason10198/SkywarnPlus)
 
-Discover other community-contributed Auto Responder scripts for MeshMonitor [here](https://meshmonitor.org/user-scripts.html).
+Discover other community-contributed scripts for MeshMonitor: https://meshmonitor.org/user-scripts.html
 
