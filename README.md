@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="docs/assets/logo.png" alt="WX (Weather Alerts) Logo" width="200"/>
+</p>
+
+<p align="center">
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/badge/Python-3.8%2B-blue" alt="Python Version">
   </a>
