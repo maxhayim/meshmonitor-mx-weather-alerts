@@ -13,7 +13,7 @@
 
 # ⛈️ WX (Weather Alerts)
 
-WX (Weather Alerts) is a [**MeshMonitor**](https://github.com/Yeraze/MeshMonitor) Script Auto Responder that provides NOAA/NWS weather alert bulletins for a configured latitude/longitude over [**Meshstatic**](https://meshtastic.org/).
+WX (Weather Alerts) is a [**MeshMonitor**](https://github.com/Yeraze/MeshMonitor) Script Auto Responder that provides NOAA/NWS weather alert bulletins for a configured latitude/longitude over [**Meshtastic**](https://meshtastic.org/), [**MeshCore**](https://meshcore.co.uk/), or any other mesh network MeshMonitor supports.
 
 This repository contains:
 
@@ -357,7 +357,7 @@ On the next timer run, WX will rebuild its state and resume normal operation.
 - Inspired by [SkywarnPlus](https://github.com/Mason10198/SkywarnPlus)
 
 WX (Weather Alerts) is **not affiliated with NOAA** and does **not** rebroadcast NOAA audio.  
-It provides text-based alerting for Meshtastic meshes using official NWS alert data.
+It provides text-based alerting for Meshtastic, MeshCore, and any other mesh network MeshMonitor supports, using official NWS alert data.
 
 ---
 

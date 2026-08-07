@@ -28,9 +28,10 @@ WX (Weather Alerts) is an independent, open-source MeshMonitor Auto Responder sc
 
 - MeshMonitor (by Yeraze)
 - Meshtastic (open-source LoRa mesh networking platform)
+- MeshCore (open-source LoRa mesh networking platform)
 - The National Weather Service (NWS) public API at https://api.weather.gov/
 
 This project uses publicly available NWS alert data but does not rebroadcast NOAA Weather Radio audio and is not affiliated with NOAA or the National Weather Service.
 
-All trademarks, logos, and brand names are the property of their respective owners.  
-WX (Weather Alerts) is not affiliated with, endorsed by, or officially connected to MeshMonitor, Meshtastic, NOAA, the National Weather Service, or any other referenced platform or provider.
+All trademarks, logos, and brand names are the property of their respective owners.
+WX (Weather Alerts) is not affiliated with, endorsed by, or officially connected to MeshMonitor, Meshtastic, MeshCore, NOAA, the National Weather Service, or any other referenced platform or provider.

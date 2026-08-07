@@ -21,6 +21,10 @@ B) Auto Responder (on-demand)
 Deployment note:
 - Uses Python standard library only (no pip deps). Works in locked-down containers (PEP 668 safe).
 
+v1.0.4 changes:
+- Fixed alert sort order: alerts now rank by actual NWS severity (Extreme > Severe > Moderate > Minor > Unknown)
+  instead of alphabetical order, so "!wx detail N" numbering matches true urgency.
+
 v1.0.3 changes:
 - Added MeshMonitor script metadata (mm_meta) for UI display + timer name autofill
 """
@@ -43,7 +47,7 @@ from urllib.error import URLError, HTTPError
 # VERSION
 # =========================
 
-WX_VERSION = "v1.0.3"
+WX_VERSION = "v1.0.4"
 
 
 # =========================
@@ -58,6 +62,9 @@ WX_SEVERITIES_ALLOW = {"Extreme", "Severe", "Moderate"}
 
 # Optional noise suppression. Set to empty set() to block nothing.
 WX_EVENTS_BLOCK = {"Special Weather Statement"}
+
+# NWS CAP severity rank, most urgent first (used for sort order, not filtering)
+WX_SEVERITY_RANK = {"Extreme": 0, "Severe": 1, "Moderate": 2, "Minor": 3, "Unknown": 4}
 
 # NWS prefers a real UA with contact info
 WX_USER_AGENT = "WX-MeshMonitor-Script (contact: you@example.com)"
@@ -252,7 +259,7 @@ def fetch_alerts(lat: float, lon: float) -> List[Alert]:
             continue
         out.append(a)
 
-    out.sort(key=lambda x: (x.severity, x.event, x.ends_best(), x.nid))
+    out.sort(key=lambda x: (WX_SEVERITY_RANK.get(x.severity, len(WX_SEVERITY_RANK)), x.event, x.ends_best(), x.nid))
     return out
 
 
